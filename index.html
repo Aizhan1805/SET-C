@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SET C • JavaScript Tasks (1–30)</title>
+
+  <style>
+    :root{
+      /* RED + BLUE THEME */
+      --bg1:#070b18;
+      --bg2:#0b1224;
+
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.16);
+
+      --text:#eef3ff;
+      --muted: rgba(238,243,255,.72);
+
+      --blue:#2d7bff;
+      --blue2:#74a8ff;
+      --red:#ff3b5c;
+      --red2:#ff7a90;
+
+      --shadow: 0 18px 45px rgba(0,0,0,.40);
+      --shadow2: 0 10px 22px rgba(0,0,0,.30);
+
+      --ring: 0 0 0 4px rgba(45,123,255,.22);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 18% 10%, rgba(45,123,255,.45), transparent 62%),
+        radial-gradient(900px 520px at 85% 20%, rgba(255,59,92,.35), transparent 62%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    a{color:inherit}
+
+    header{
+      position:sticky;top:0;z-index:10;
+      background:rgba(7,11,24,.70);
+      backdrop-filter: blur(12px);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 10px 20px rgba(0,0,0,.35);
+      padding:16px 18px;
+    }
+    .wrap{max-width:1150px;margin:0 auto;padding:18px}
+    h1{
+      margin:0;
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.2px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:14px;
+      padding:18px 0 30px;
+    }
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow2);
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(520px 220px at 15% 0%, rgba(45,123,255,.18), transparent 60%),
+        radial-gradient(520px 220px at 92% 10%, rgba(255,59,92,.14), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .card > *{position:relative}
+
+    .title{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;margin-bottom:8px}
+    .title b{font-size:14px}
+    .desc{color:var(--muted);font-size:12px;margin:0 0 10px}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .half{flex:1;min-width:160px}
+
+    input, textarea, select{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.26);
+      color:var(--text);
+      padding:10px 12px;
+      outline:none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+      transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    textarea{min-height:70px;resize:vertical}
+    input::placeholder, textarea::placeholder{color: rgba(238,243,255,.45)}
+    input:focus, textarea:focus, select:focus{
+      border-color: rgba(45,123,255,.55);
+      box-shadow: var(--ring), inset 0 0 0 1px rgba(45,123,255,.14);
+      transform: translateY(-1px);
+    }
+
+    button{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      box-shadow:var(--shadow2);
+      transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    button:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 26px rgba(0,0,0,.35);
+      filter:saturate(1.05);
+    }
+    .primary{
+      background: linear-gradient(90deg, rgba(45,123,255,.70), rgba(255,59,92,.60));
+      border-color: rgba(255,255,255,.22);
+    }
+    .danger{
+      background: linear-gradient(90deg, rgba(255,59,92,.28), rgba(255,255,255,.06));
+      border-color: rgba(255,59,92,.35);
+    }
+
+    .out{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.22);
+      background: rgba(0,0,0,.22);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size:13px;
+      white-space:pre-wrap;
+      min-height:38px;
+    }
+
+    .pillbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: linear-gradient(90deg, rgba(45,123,255,.22), rgba(255,59,92,.18));
+      font-size:12px;font-weight:800;color:rgba(238,243,255,.92);
+    }
+    .note{font-size:12px;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <h1>SET C • JavaScript Tasks (1–30)</h1>
+    <div class="sub">All tasks in one page (inputs + buttons + outputs). Popup tasks use prompt().</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+
+    <!-- 1 -->
+    <section class="card">
+      <div class="title"><b>1) Reverse a string</b></div>
+      <p class="desc">Enter text → reverse.</p>
+      <div class="row">
+        <input id="t1" class="half" placeholder="Type a string..." />
+        <button class="primary" onclick="task1()">Reverse</button>
+      </div>
+      <div id="o1" class="out"></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="card">
+      <div class="title"><b>2) Extract 3rd and 4th characters</b></div>
+      <p class="desc">Shows characters at positions 3 and 4 (1-based).</p>
+      <div class="row">
+        <input id="t2" class="half" placeholder="Type a string..." />
+        <button class="primary" onclick="task2()">Extract</button>
+      </div>
+      <div id="o2" class="out"></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="card">
+      <div class="title"><b>3) Convert UPPER ↔ lower toggle</b></div>
+      <p class="desc">Toggle each letter case.</p>
+      <div class="row">
+        <input id="t3" class="half" placeholder="Type a string..." />
+        <button class="primary" onclick="task3()">Toggle</button>
+      </div>
+      <div id="o3" class="out"></div>
+    </section>
+
+    <!-- 4 -->
+    <section class="card">
+      <div class="title"><b>4) Find substring location</b></div>
+      <p class="desc">Find index of substring (0-based). -1 if not found.</p>
+      <div class="row">
+        <input id="t4a" class="half" placeholder="Main string..." />
+        <input id="t4b" class="half" placeholder="Substring..." />
+        <button class="primary" onclick="task4()">Find</button>
+      </div>
+      <div id="o4" class="out"></div>
+    </section>
+
+    <!-- 5 -->
+    <section class="card">
+      <div class="title"><b>5) Count special characters</b></div>
+      <p class="desc">Counts non-alphanumeric characters (not A–Z, a–z, 0–9).</p>
+      <div class="row">
+        <input id="t5" class="half" placeholder="Type a string..." />
+        <button class="primary" onclick="task5()">Count</button>
+      </div>
+      <div id="o5" class="out"></div>
+    </section>
+
+    <!-- 6 -->
+    <section class="card">
+      <div class="title"><b>6) Find repeated characters in a word</b></div>
+      <p class="desc">Shows repeated letters with counts.</p>
+      <div class="row">
+        <input id="t6" class="half" placeholder="Type a word..." />
+        <button class="primary" onclick="task6()">Find repeats</button>
+      </div>
+      <div id="o6" class="out"></div>
+    </section>
+
+    <!-- 7 -->
+    <section class="card">
+      <div class="title"><b>7) Create array of numbers and display</b></div>
+      <p class="desc">Enter numbers separated by comma.</p>
+      <div class="row">
+        <input id="t7" class="half" placeholder="e.g. 1, 2, 3, 10" />
+        <button class="primary" onclick="task7()">Create</button>
+      </div>
+      <div id="o7" class="out"></div>
+    </section>
+
+    <!-- 8 -->
+    <section class="card">
+      <div class="title"><b>8) Find last element from array (popup)</b></div>
+      <p class="desc">Uses prompt: enter array values separated by commas.</p>
+      <div class="row">
+        <button class="primary" onclick="task8()">Run popup</button>
+      </div>
+      <div id="o8" class="out"></div>
+    </section>
+
+    <!-- 9 -->
+    <section class="card">
+      <div class="title"><b>9) Find 10th character from string (popup)</b></div>
+      <p class="desc">Uses prompt. (10th = index 9)</p>
+      <div class="row">
+        <button class="primary" onclick="task9()">Run popup</button>
+      </div>
+      <div id="o9" class="out"></div>
+    </section>
+
+    <!-- 10 -->
+    <section class="card">
+      <div class="title"><b>10) Merge two arrays</b></div>
+      <p class="desc">Enter two arrays (comma-separated).</p>
+      <div class="row">
+        <input id="t10a" class="half" placeholder="Array 1: 1,2,3" />
+        <input id="t10b" class="half" placeholder="Array 2: 4,5,6" />
+        <button class="primary" onclick="task10()">Merge</button>
+      </div>
+      <div id="o10" class="out"></div>
+    </section>
+
+    <!-- 11 -->
+    <section class="card">
+      <div class="title"><b>11) Apply map() to double elements</b></div>
+      <p class="desc">Numbers only (comma-separated).</p>
+      <div class="row">
+        <input id="t11" class="half" placeholder="e.g. 2, 5, 10" />
+        <button class="primary" onclick="task11()">Double</button>
+      </div>
+      <div id="o11" class="out"></div>
+    </section>
+
+    <!-- 12 -->
+    <section class="card">
+      <div class="title"><b>12) Find max and min from array</b></div>
+      <p class="desc">Numbers only.</p>
+      <div class="row">
+        <input id="t12" class="half" placeholder="e.g. 7, 2, 9, 1" />
+        <button class="primary" onclick="task12()">Find</button>
+      </div>
+      <div id="o12" class="out"></div>
+    </section>
+
+    <!-- 13 -->
+    <section class="card">
+      <div class="title"><b>13) Splice: insert elements at specific index</b></div>
+      <p class="desc">Array + index + elements to insert.</p>
+      <div class="row">
+        <input id="t13arr" class="half" placeholder="Array: a,b,c,d" />
+        <input id="t13idx" class="half" type="number" placeholder="Index (0...)" />
+        <input id="t13ins" class="half" placeholder="Insert: X,Y" />
+        <button class="primary" onclick="task13()">Insert</button>
+      </div>
+      <div id="o13" class="out"></div>
+    </section>
+
+    <!-- 14 -->
+    <section class="card">
+      <div class="title"><b>14) Splice: delete specific index range</b></div>
+      <p class="desc">Delete count from start index.</p>
+      <div class="row">
+        <input id="t14arr" class="half" placeholder="Array: a,b,c,d,e" />
+        <input id="t14idx" class="half" type="number" placeholder="Start index" />
+        <input id="t14count" class="half" type="number" placeholder="Delete count" />
+        <button class="primary" onclick="task14()">Delete</button>
+      </div>
+      <div id="o14" class="out"></div>
+    </section>
+
+    <!-- 15 -->
+    <section class="card">
+      <div class="title"><b>15) Function: arithmetic based on user choice</b></div>
+      <p class="desc">Choose operation and calculate.</p>
+      <div class="row">
+        <input id="t15a" class="half" type="number" placeholder="A" />
+        <input id="t15b" class="half" type="number" placeholder="B" />
+        <select id="t15op" class="half">
+          <option value="+">+</option><option value="-">-</option>
+          <option value="*">*</option><option value="/">/</option>
+        </select>
+        <button class="primary" onclick="task15()">Calculate</button>
+      </div>
+      <div id="o15" class="out"></div>
+    </section>
+
+    <!-- 16 -->
+    <section class="card">
+      <div class="title"><b>16) Function: prime number check</b></div>
+      <p class="desc">Checks if number is prime.</p>
+      <div class="row">
+        <input id="t16" class="half" type="number" placeholder="Enter a number" />
+        <button class="primary" onclick="task16()">Check</button>
+      </div>
+      <div id="o16" class="out"></div>
+    </section>
+
+    <!-- 17 -->
+    <section class="card">
+      <div class="title"><b>17) Function: palindrome check (string or number)</b></div>
+      <p class="desc">Ignores spaces and case.</p>
+      <div class="row">
+        <input id="t17" class="half" placeholder="e.g. madam / 12321" />
+        <button class="primary" onclick="task17()">Check</button>
+      </div>
+      <div id="o17" class="out"></div>
+    </section>
+
+    <!-- 18 -->
+    <section class="card">
+      <div class="title"><b>18) Function: Fibonacci series generator</b></div>
+      <p class="desc">Generate first N Fibonacci numbers.</p>
+      <div class="row">
+        <input id="t18" class="half" type="number" placeholder="N (e.g. 10)" />
+        <button class="primary" onclick="task18()">Generate</button>
+      </div>
+      <div id="o18" class="out"></div>
+    </section>
+
+    <!-- 19 -->
+    <section class="card">
+      <div class="title"><b>19) Function: power of number</b></div>
+      <p class="desc">Compute a^b.</p>
+      <div class="row">
+        <input id="t19a" class="half" type="number" placeholder="Base (a)" />
+        <input id="t19b" class="half" type="number" placeholder="Power (b)" />
+        <button class="primary" onclick="task19()">Power</button>
+      </div>
+      <div id="o19" class="out"></div>
+    </section>
+
+    <!-- 20 -->
+    <section class="card">
+      <div class="title"><b>20) Popup: allow only 10-digit input</b></div>
+      <p class="desc">Prompt until 10 digits or cancelled.</p>
+      <div class="row">
+        <button class="primary" onclick="task20()">Run popup</button>
+      </div>
+      <div id="o20" class="out"></div>
+    </section>
+
+    <!-- 21 -->
+    <section class="card">
+      <div class="title"><b>21) Popup: accept array string and convert to array</b></div>
+      <p class="desc">Prompt: "a,b,c" → ["a","b","c"]</p>
+      <div class="row">
+        <button class="primary" onclick="task21()">Run popup</button>
+      </div>
+      <div id="o21" class="out"></div>
+    </section>
+
+    <!-- 22 -->
+    <section class="card">
+      <div class="title"><b>22) Validate: email format (basic)</b></div>
+      <p class="desc">Basic regex validation.</p>
+      <div class="row">
+        <input id="t22" class="half" placeholder="name@email.com" />
+        <button class="primary" onclick="task22()">Validate</button>
+      </div>
+      <div id="o22" class="out"></div>
+    </section>
+
+    <!-- 23 -->
+    <section class="card">
+      <div class="title"><b>23) Validate: mobile number digits check</b></div>
+      <p class="desc">Digits only, length 10–15 allowed.</p>
+      <div class="row">
+        <input id="t23" class="half" placeholder="e.g. 77754701398" />
+        <button class="primary" onclick="task23()">Validate</button>
+      </div>
+      <div id="o23" class="out"></div>
+    </section>
+
+    <!-- 24,25,26 -->
+    <section class="card">
+      <div class="title"><b>24–26) Signup form (submit/reset) + show result + prevent invalid submit</b></div>
+      <p class="desc">Submit shows data in result; invalid prevents submit.</p>
+
+      <form id="signupForm" onsubmit="return task24_26(event)">
+        <div class="row">
+          <div class="half">
+            <label class="note">Name</label>
+            <input id="sName" placeholder="Your name" />
+          </div>
+          <div class="half">
+            <label class="note">Email</label>
+            <input id="sEmail" placeholder="name@email.com" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="half">
+            <label class="note">Mobile</label>
+            <input id="sMobile" placeholder="digits only" />
+          </div>
+          <div class="half">
+            <label class="note">Password</label>
+            <input id="sPass" type="password" placeholder="min 6 chars" />
+          </div>
+        </div>
+
+        <div class="pillbar">
+          <span class="pill">Validation</span>
+          <span class="pill">Result section</span>
+          <span class="pill">Reset</span>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="primary" type="submit">Submit</button>
+          <button class="danger" type="reset" onclick="document.getElementById('o24').textContent=''">Reset</button>
+        </div>
+      </form>
+
+      <div id="o24" class="out"></div>
+    </section>
+
+    <!-- 27 -->
+    <section class="card">
+      <div class="title"><b>27) Create person object (name, age, gender)</b></div>
+      <p class="desc">Creates JS object and shows it.</p>
+      <div class="row">
+        <input id="t27n" class="half" placeholder="Name" />
+        <input id="t27a" class="half" type="number" placeholder="Age" />
+        <input id="t27g" class="half" placeholder="Gender" />
+        <button class="primary" onclick="task27()">Create</button>
+      </div>
+      <div id="o27" class="out"></div>
+    </section>
+
+    <!-- 28 -->
+    <section class="card">
+      <div class="title"><b>28) Display object + loop properties</b></div>
+      <p class="desc">Uses the person object from task 27.</p>
+      <div class="row">
+        <button class="primary" onclick="task28()">Show + Loop</button>
+      </div>
+      <div id="o28" class="out"></div>
+    </section>
+
+    <!-- 29 -->
+    <section class="card">
+      <div class="title"><b>29) Stopwatch (setInterval) Start/Pause/Stop/Reset</b></div>
+      <p class="desc">Timer in HH:MM:SS.ms</p>
+      <div class="row">
+        <button class="primary" onclick="swStart()">Start</button>
+        <button onclick="swPause()">Pause</button>
+        <button class="danger" onclick="swStop()">Stop</button>
+        <button onclick="swReset()">Reset</button>
+      </div>
+      <div id="o29" class="out">00:00:00.00</div>
+    </section>
+
+    <!-- 30 -->
+    <section class="card">
+      <div class="title"><b>30) Keypress event: display typed characters live</b></div>
+      <p class="desc">Type in the box, text appears live below.</p>
+      <div class="row">
+        <input id="t30" class="half" placeholder="Start typing..." />
+      </div>
+      <div id="o30" class="out"></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // Helpers
+  const $ = (id)=>document.getElementById(id);
+  const out = (id, text)=>$(id).textContent = String(text ?? "");
+
+  const parseList = (s)=> (s||"").split(",").map(x=>x.trim()).filter(x=>x.length>0);
+  const parseNums = (s)=> parseList(s).map(Number).filter(n=>Number.isFinite(n));
+
+  // 1
+  function task1(){
+    const s = $("t1").value;
+    out("o1", s.split("").reverse().join(""));
+  }
+
+  // 2
+  function task2(){
+    const s = $("t2").value;
+    if(s.length < 4) return out("o2","Need at least 4 characters.");
+    const c3 = s[2], c4 = s[3];
+    out("o2", `3rd: ${c3}\n4th: ${c4}`);
+  }
+
+  // 3
+  function task3(){
+    const s = $("t3").value;
+    const toggled = [...s].map(ch=>{
+      const up = ch.toUpperCase(), lo = ch.toLowerCase();
+      if(ch === up && ch !== lo) return lo;
+      if(ch === lo && ch !== up) return up;
+      return ch;
+    }).join("");
+    out("o3", toggled);
+  }
+
+  // 4
+  function task4(){
+    const s = $("t4a").value;
+    const sub = $("t4b").value;
+    out("o4", `Index: ${s.indexOf(sub)}`);
+  }
+
+  // 5
+  function task5(){
+    const s = $("t5").value;
+    const m = s.match(/[^a-z0-9]/gi);
+    out("o5", `Special characters count: ${m ? m.length : 0}`);
+  }
+
+  // 6
+  function task6(){
+    const w = ($("t6").value || "").trim();
+    if(!w) return out("o6","Enter a word.");
+    const map = {};
+    for(const ch of w){
+      map[ch] = (map[ch]||0)+1;
+    }
+    const repeated = Object.entries(map).filter(([_,c])=>c>1);
+    if(repeated.length===0) return out("o6","No repeated characters.");
+    out("o6", repeated.map(([ch,c])=>`${ch} → ${c}`).join("\n"));
+  }
+
+  // 7
+  function task7(){
+    const nums = parseNums($("t7").value);
+    out("o7", `Array: [${nums.join(", ")}]\nLength: ${nums.length}`);
+  }
+
+  // 8 popup
+  function task8(){
+    const s = prompt("Enter array values separated by commas (e.g. a,b,c):");
+    if(s===null) return out("o8","Cancelled.");
+    const arr = parseList(s);
+    const last = arr.length ? arr[arr.length-1] : "(empty)";
+    out("o8", `Array: [${arr.join(", ")}]\nLast element: ${last}`);
+  }
+
+  // 9 popup
+  function task9(){
+    const s = prompt("Enter a string (need at least 10 characters):");
+    if(s===null) return out("o9","Cancelled.");
+    if(s.length < 10) return out("o9","Too short (need 10 chars).");
+    out("o9", `10th character: ${s[9]}`);
+  }
+
+  // 10
+  function task10(){
+    const a1 = parseList($("t10a").value);
+    const a2 = parseList($("t10b").value);
+    const merged = [...a1, ...a2];
+    out("o10", `Merged: [${merged.join(", ")}]`);
+  }
+
+  // 11
+  function task11(){
+    const nums = parseNums($("t11").value);
+    const doubled = nums.map(n=>n*2);
+    out("o11", `Original: [${nums.join(", ")}]\nDoubled:  [${doubled.join(", ")}]`);
+  }
+
+  // 12
+  function task12(){
+    const nums = parseNums($("t12").value);
+    if(nums.length===0) return out("o12","Enter numbers.");
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
+    out("o12", `Array: [${nums.join(", ")}]\nMin: ${min}\nMax: ${max}`);
+  }
+
+  // 13 splice insert
+  function task13(){
+    const arr = parseList($("t13arr").value);
+    const idx = Number($("t13idx").value);
+    const ins = parseList($("t13ins").value);
+    if(!Number.isInteger(idx) || idx<0) return out("o13","Index must be 0 or more.");
+    const copy = arr.slice();
+    copy.splice(idx, 0, ...ins);
+    out("o13", `Before: [${arr.join(", ")}]\nAfter:  [${copy.join(", ")}]`);
+  }
+
+  // 14 splice delete
+  function task14(){
+    const arr = parseList($("t14arr").value);
+    const idx = Number($("t14idx").value);
+    const count = Number($("t14count").value);
+    if(!Number.isInteger(idx) || idx<0) return out("o14","Start index must be 0 or more.");
+    if(!Number.isInteger(count) || count<0) return out("o14","Delete count must be 0 or more.");
+    const copy = arr.slice();
+    const removed = copy.splice(idx, count);
+    out("o14", `Before:  [${arr.join(", ")}]\nRemoved: [${removed.join(", ")}]\nAfter:   [${copy.join(", ")}]`);
+  }
+
+  // 15 arithmetic
+  function calc(a,b,op){
+    if(op==="+") return a+b;
+    if(op==="-") return a-b;
+    if(op==="*") return a*b;
+    if(op==="/") return (b===0) ? "Error: divide by 0" : a/b;
+    return "Unknown op";
+  }
+  function task15(){
+    const a = Number($("t15a").value);
+    const b = Number($("t15b").value);
+    const op = $("t15op").value;
+    out("o15", `Result: ${calc(a,b,op)}`);
+  }
+
+  // 16 prime
+  function isPrime(n){
+    if(!Number.isInteger(n) || n<2) return false;
+    if(n===2) return true;
+    if(n%2===0) return false;
+    for(let i=3;i*i<=n;i+=2){
+      if(n%i===0) return false;
+    }
+    return true;
+  }
+  function task16(){
+    const n = Number($("t16").value);
+    out("o16", isPrime(n) ? `${n} is PRIME ✅` : `${n} is NOT prime ❌`);
+  }
+
+  // 17 palindrome
+  function task17(){
+    const s = ($("t17").value ?? "");
+    const clean = s.toLowerCase().replace(/[^a-z0-9]/g,"");
+    const rev = clean.split("").reverse().join("");
+    out("o17", clean && clean===rev ? "Palindrome ✅" : "Not palindrome ❌");
+  }
+
+  // 18 fibonacci
+  function fib(n){
+    const res=[];
+    let a=0,b=1;
+    for(let i=0;i<n;i++){
+      res.push(a);
+      [a,b]=[b,a+b];
+    }
+    return res;
+  }
+  function task18(){
+    const n = Number($("t18").value);
+    if(!Number.isInteger(n) || n<1) return out("o18","Enter N >= 1.");
+    out("o18", `Fibonacci (${n}): [${fib(n).join(", ")}]`);
+  }
+
+  // 19 power
+  function task19(){
+    const a = Number($("t19a").value);
+    const b = Number($("t19b").value);
+    out("o19", `${a} ^ ${b} = ${Math.pow(a,b)}`);
+  }
+
+  // 20 popup 10-digit
+  function task20(){
+    while(true){
+      const s = prompt("Enter EXACTLY 10 digits (example: 1234567890):");
+      if(s===null) return out("o20","Cancelled.");
+      const ok = /^\d{10}$/.test(s.trim());
+      if(ok) return out("o20", `Accepted ✅ 10-digit: ${s.trim()}`);
+      alert("Invalid. Please enter exactly 10 digits.");
+    }
+  }
+
+  // 21 popup string->array
+  function task21(){
+    const s = prompt('Enter array string like "a,b,c":');
+    if(s===null) return out("o21","Cancelled.");
+    const arr = parseList(s);
+    out("o21", `Array: [${arr.map(x=>JSON.stringify(x)).join(", ")}]`);
+  }
+
+  // 22 email validate
+  function task22(){
+    const s = $("t22").value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+    out("o22", ok ? "Valid email ✅" : "Invalid email ❌");
+  }
+
+  // 23 mobile validate
+  function task23(){
+    const s = $("t23").value.trim();
+    const ok = /^\d{10,15}$/.test(s);
+    out("o23", ok ? "Valid mobile ✅" : "Invalid mobile ❌ (digits only, length 10–15)");
+  }
+
+  // 24-26 signup
+  function task24_26(e){
+    e.preventDefault();
+    const name = $("sName").value.trim();
+    const email = $("sEmail").value.trim();
+    const mobile = $("sMobile").value.trim();
+    const pass = $("sPass").value;
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    const mobOk = /^\d{10,15}$/.test(mobile);
+    const passOk = pass.length >= 6;
+
+    if(!name || !emailOk || !mobOk || !passOk){
+      out("o24",
+        "❌ Validation failed. Submit blocked.\n" +
+        `Name: ${name ? "OK" : "Required"}\n` +
+        `Email: ${emailOk ? "OK" : "Invalid"}\n` +
+        `Mobile: ${mobOk ? "OK" : "Digits 10–15"}\n` +
+        `Password: ${passOk ? "OK" : "Min 6 chars"}`
+      );
+      return false;
+    }
+
+    out("o24",
+      "✅ Submitted Data:\n" +
+      `Name: ${name}\nEmail: ${email}\nMobile: ${mobile}\nPassword: ${"*".repeat(pass.length)}`
+    );
+    return false;
+  }
+
+  // 27 person object
+  let person = null;
+  function task27(){
+    const name = $("t27n").value.trim();
+    const age = Number($("t27a").value);
+    const gender = $("t27g").value.trim();
+    person = { name, age, gender };
+    out("o27", JSON.stringify(person, null, 2));
+  }
+
+  // 28 loop properties
+  function task28(){
+    if(!person) return out("o28","Create person object first (Task 27).");
+    let s = "Person object:\n";
+    for(const key in person){
+      s += `${key}: ${person[key]}\n`;
+    }
+    out("o28", s.trim());
+  }
+
+  // 29 stopwatch
+  let swTimer=null;
+  let swStartAt=0;
+  let swElapsed=0;
+
+  function fmt(ms){
+    const total = Math.max(0, ms);
+    const h = Math.floor(total/3600000);
+    const m = Math.floor((total%3600000)/60000);
+    const s = Math.floor((total%60000)/1000);
+    const cs = Math.floor((total%1000)/10);
+    const pad = (n,w=2)=>String(n).padStart(w,"0");
+    return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
+  }
+  function swTick(){
+    const now = Date.now();
+    const ms = swElapsed + (now - swStartAt);
+    out("o29", fmt(ms));
+  }
+  function swStart(){
+    if(swTimer) return;
+    swStartAt = Date.now();
+    swTimer = setInterval(swTick, 50);
+  }
+  function swPause(){
+    if(!swTimer) return;
+    swElapsed += Date.now() - swStartAt;
+    clearInterval(swTimer);
+    swTimer = null;
+    swTick();
+  }
+  function swStop(){
+    if(swTimer){
+      clearInterval(swTimer);
+      swTimer = null;
+    }
+    swElapsed = 0;
+    out("o29", "00:00:00.00");
+  }
+  function swReset(){
+    swElapsed = 0;
+    swStartAt = Date.now();
+    out("o29", "00:00:00.00");
+  }
+
+  // 30 keypress live
+  $("t30").addEventListener("input", (e)=>{
+    out("o30", e.target.value);
+  });
+</script>
+
+</body>
+</html>
